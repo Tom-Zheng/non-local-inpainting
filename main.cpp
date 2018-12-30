@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 	float patch_sigma					= atof(pick_option(&argc, &argv, "psigma" , "10000.0"));	// uniform weights
 	string show_nnf_file				=      pick_option(&argc, &argv, "shownnf", "");
 	string show_pyramid_file			=      pick_option(&argc, &argv, "showpyr", "");
+	string depth_name			=      pick_option(&argc, &argv, "depth", "");                  // Depth filename
 
 	if (argc < 4) {
 		// display usage message and quit
@@ -132,7 +133,12 @@ int main(int argc, char *argv[])
 		throw std::runtime_error("ERROR: Mask should not be empty (all black)");
 	}
 
+        // read depth map (if applicable)
+        // TODO
+	
+	if (!depth_name.empty())    {
 
+	}
 	// rest of parameters
 
 	// default value for the coarsest scale, using Alasdair Newson rule of thumb

@@ -1,0 +1,8 @@
+
+* iio contains Enric Meinhardt's iio image library: 
+    https://github.com/mnhrdt/iio
+
+* simpois contains simpois.c (and other dependent files) 
+  from Enric Meinhardt's image script collection: 
+    https://github.com/mnhrdt/imscript
+

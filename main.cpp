@@ -139,7 +139,18 @@ int main(int argc, char *argv[])
 	if (!depth_name.empty())    {
 		depth_exists = true;
 		depth = IOUtility::read_mono_image(depth_name);
+		input = IOUtility::cat(input, depth);
 	}
+	// DEBUG: Depth concatenate test
+	
+	// if (depth_exists) {
+	// 	Image<float> all;
+	// 	Image<float> separated_RGB(input.get_size(), (uint)3);
+	// 	all = IOUtility::cat(input, depth);
+	// 	separated_RGB = IOUtility::lab_to_rgb(all);
+	// 	IOUtility::write_rgb_image("test.png", separated_RGB);
+	// }
+
 	// rest of parameters
 
 	// default value for the coarsest scale, using Alasdair Newson rule of thumb
@@ -285,6 +296,8 @@ int main(int argc, char *argv[])
 	// save result
 #ifndef IPOL_DEMO
 	IOUtility::write_rgb_image(output_str.str(), IOUtility::lab_to_rgb(output));
+	IOUtility::write_rgb_image("inpainted_depth.png", IOUtility::get_depth(output));
+	
 #else
    // in the IPOL demo the output filename is fixed just output_name
 	IOUtility::write_rgb_image(output_name, IOUtility::lab_to_rgb(output));

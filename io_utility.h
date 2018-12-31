@@ -61,6 +61,7 @@ public:
 	static Image<float> cat(FixedImage<float> image, FixedImage<float> depth);
 	// Separate depth and RGB
 	static void separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth);
+	static Image<float> get_depth(FixedImage<float> input);
 
 private:
 	static string _prefix;

@@ -450,13 +450,13 @@ void IOUtility::xyz_to_rgb(const float *xyz, float *rgb)
 }
 
 // Concatenate RGB and Depth Channel
-static Image<float> IOUtility::cat(FixedImage<float> image, FixedImage<float> depth)    {
+Image<float> IOUtility::cat(FixedImage<float> image, FixedImage<float> depth)    {
 	Image<float> out(image.get_size(), (uint)4);
 	if(image.get_number_of_channels() != 3 && depth.get_number_of_channels() != 1)    {
-		throw std::runtime_error("Channels do not match.");
+		throw std::runtime_error("cat: Channels do not match.");
 	}
 	if(image.get_size() != depth.get_size())    {
-		throw std::runtime_error("Channels do not match.");
+		throw std::runtime_error("cat: Size does not match.");
 	}
 	for (uint row = 0; row < image.get_size_y(); row++)    {
 		for (uint col = 0; col < image.get_size_x(); col++)    {
@@ -464,23 +464,33 @@ static Image<float> IOUtility::cat(FixedImage<float> image, FixedImage<float> de
 			for (ch = 0; ch < 3; ch++)    {
 				out.at(col, row, ch) = image.at(col, row, ch);
 			}
-			out.at(col, row, ch) = depth.at(col, row, ch);
+			out.at(col, row, ch) = depth.at(col, row);
 		}
 	}
 	return out;
 }
 // Separate depth and RGB
-static void IOUtility::separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth)    {
+void IOUtility::separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth)    {
 	if (input.get_number_of_channels() != 4)    {
-		throw std::runtime_error("Channels do not match.");
+		throw std::runtime_error("Separate: Channels do not match.");
 	}
 	for (uint row = 0; row < input.get_size_y(); row++)    {
-		for (uint col = 0; col < image.get_size_x(); col++)    {
+		for (uint col = 0; col < input.get_size_x(); col++)    {
 			uint ch = 0;
 			for (ch = 0; ch < 3; ch++)    {
 				rgb.at(col, row, ch) = input.at(col, row, ch);
 			}
-			depth.at(col, row, ch) = input.at(col, row, ch);
+			depth.at(col, row) = input.at(col, row, ch);
 		}
 	}
+}
+
+Image<float> IOUtility::get_depth(FixedImage<float> input)    {
+	if (input.get_number_of_channels() != 4)    {
+		throw std::runtime_error("Separate: Channels do not match.");
+	}
+	Image<float> rgb(input.get_size(), (uint)3);
+	Image<float> depth(input.get_size());
+	IOUtility::separate(input, rgb, depth);
+	return depth;
 }

@@ -291,16 +291,21 @@ Image<float> IOUtility::rgb_to_lab(FixedImage<float> image)
 
 Image<float> IOUtility::lab_to_rgb(FixedImage<float> image)
 {
-	if (image.get_number_of_channels() != 3) {
+	if (image.get_number_of_channels() != 3 && image.get_number_of_channels() != 4) {
 		return image;
 	}
-
+    
 	Image<float> image_rgb(image.get_size(), 3, 0.0f);
 	const float* data_lab = image.raw();
 	float* data_rgb = image_rgb.raw();
 	long number_of_pixels = image.get_size_x() * image.get_size_y();
 	float *xyz_buffer = new float[3];
-
+    if (image.get_number_of_channels() == 4)    {
+		Image<float> img(image.get_size(), (uint)3);
+		Image<float> depth(image.get_size(), (uint)1);
+		IOUtility::separate(image, img, depth);
+		data_lab = img.raw();
+	} 
 	//#pragma omp parallel for
 	for (int i = 0; i < number_of_pixels; i++) {
 		lab_to_xyz(data_lab + i * 3, xyz_buffer);
@@ -442,4 +447,40 @@ void IOUtility::xyz_to_rgb(const float *xyz, float *rgb)
 	rgb[0] = aux_r * 255.0f;
 	rgb[1] = aux_g * 255.0f;
 	rgb[2] = aux_b * 255.0f;
+}
+
+// Concatenate RGB and Depth Channel
+static Image<float> IOUtility::cat(FixedImage<float> image, FixedImage<float> depth)    {
+	Image<float> out(image.get_size(), (uint)4);
+	if(image.get_number_of_channels() != 3 && depth.get_number_of_channels() != 1)    {
+		throw std::runtime_error("Channels do not match.");
+	}
+	if(image.get_size() != depth.get_size())    {
+		throw std::runtime_error("Channels do not match.");
+	}
+	for (uint row = 0; row < image.get_size_y(); row++)    {
+		for (uint col = 0; col < image.get_size_x(); col++)    {
+			uint ch = 0;
+			for (ch = 0; ch < 3; ch++)    {
+				out.at(col, row, ch) = image.at(col, row, ch);
+			}
+			out.at(col, row, ch) = depth.at(col, row, ch);
+		}
+	}
+	return out;
+}
+// Separate depth and RGB
+static void IOUtility::separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth)    {
+	if (input.get_number_of_channels() != 4)    {
+		throw std::runtime_error("Channels do not match.");
+	}
+	for (uint row = 0; row < input.get_size_y(); row++)    {
+		for (uint col = 0; col < image.get_size_x(); col++)    {
+			uint ch = 0;
+			for (ch = 0; ch < 3; ch++)    {
+				rgb.at(col, row, ch) = input.at(col, row, ch);
+			}
+			depth.at(col, row, ch) = input.at(col, row, ch);
+		}
+	}
 }

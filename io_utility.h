@@ -57,6 +57,11 @@ public:
 	// Prefix is applied to a file name by compose_file_name functions
 	static void set_prefix(const string &prefix);
 
+	// Concatenate RGB and Depth Channel
+	static Image<float> cat(FixedImage<float> image, FixedImage<float> depth);
+	// Separate depth and RGB
+	static void separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth);
+
 private:
 	static string _prefix;
 

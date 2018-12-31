@@ -133,11 +133,12 @@ int main(int argc, char *argv[])
 		throw std::runtime_error("ERROR: Mask should not be empty (all black)");
 	}
 
-        // read depth map (if applicable)
-        // TODO
-	
+    // read depth map (if applicable)
+	bool depth_exists = false;
+	Image<float> depth;
 	if (!depth_name.empty())    {
-
+		depth_exists = true;
+		depth = IOUtility::read_mono_image(depth_name);
 	}
 	// rest of parameters
 

@@ -27,6 +27,7 @@
 
 /// define DBG_OUTPUT to turn on the output after each iteration and other debug images output
 //#define DBG_OUTPUT
+#include "io_utility.h"
 
 #ifdef DBG_OUTPUT
 #include "io_utility.h"

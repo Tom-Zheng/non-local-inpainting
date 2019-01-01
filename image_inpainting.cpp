@@ -181,7 +181,6 @@ Image<float> ImageInpainting::process(FixedImage<float> in, FixedMask mask)
 #endif
 		printf("\tinpainting scale %d\n", i+1);
 		inpaint_internal(_image_pyramid[i], _mask_pyramid[i], confidence_mask, nnf, _tolerance);
-
 #ifdef DBG_OUTPUT
 		IOUtility::write_rgb_image(IOUtility::compose_file_name("dbg_inpainted", _scales_amount - i - 1, "png"), IOUtility::lab_to_rgb(_image_pyramid[i]));
 #endif
@@ -393,7 +392,9 @@ void ImageInpainting::inpaint_internal(Image<float> image,
 
 		// update image
 		total_difference = _image_updating->update(image, original_image, inpainting_domain, extended_inpainting_domain, nnf, confidence_mask);
-
+		// DEBUG
+		if (i % 10 == 0)
+			printf("\t\t\tIter:%d, Err: %f\n", i, total_difference);
 #ifdef DBG_OUTPUT
 		if (i % 10 == 0)
 			IOUtility::write_rgb_image(IOUtility::compose_file_name("dbg_inpainted", cm_ind, i, "png"), IOUtility::lab_to_rgb(image));

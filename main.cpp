@@ -19,6 +19,7 @@
 #include "patch_non_local_means.h"
 #include "patch_non_local_medians.h"
 #include "patch_non_local_poisson.h"
+#include "patch_non_local_depth.h"
 #include "l1_norm_patch_distance.h"
 #include "l2_norm_patch_distance.h"
 #include "l2_combined_patch_distance.h"
@@ -249,6 +250,10 @@ int main(int argc, char *argv[])
 	} else if (method_name.compare("nlpoisson") == 0) {
 		image_updating = new PatchNonLocalPoisson(image_update_patch_size, image_update_sigma, lambda, 0.000001, 1000);	// 0.000001, 1000
 		patch_distance = new L2CombinedPatchDistance(lambda, weights_update_patch_size, weights_update_sigma);
+	} else if (method_name.compare("nldepth") == 0) {
+		// TODO: image update method for RGBD
+		image_updating = new PatchNonLocalDepth(image_update_patch_size, image_update_sigma, lambda, 0.000001, 1000);	// 0.000001, 1000
+		patch_distance = new L2CombinedPatchDistance(lambda, weights_update_patch_size, weights_update_sigma);
 	} else {
 		throw std::runtime_error("ERROR: Unknown method name");
 	}
@@ -296,8 +301,8 @@ int main(int argc, char *argv[])
 	// save result
 #ifndef IPOL_DEMO
 	IOUtility::write_rgb_image(output_str.str(), IOUtility::lab_to_rgb(output));
-	IOUtility::write_rgb_image("inpainted_depth.png", IOUtility::get_depth(output));
-	
+	if (depth_exists)
+		IOUtility::write_rgb_image("inpainted_depth.png", IOUtility::get_depth(output));
 #else
    // in the IPOL demo the output filename is fixed just output_name
 	IOUtility::write_rgb_image(output_name, IOUtility::lab_to_rgb(output));

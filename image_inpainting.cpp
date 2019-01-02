@@ -396,8 +396,12 @@ void ImageInpainting::inpaint_internal(Image<float> image,
 		if (i % 10 == 0)
 			printf("\t\t\tIter:%d, Err: %f\n", i, total_difference);
 #ifdef DBG_OUTPUT
-		if (i % 10 == 0)
+		if (i % 10 == 0) {
 			IOUtility::write_rgb_image(IOUtility::compose_file_name("dbg_inpainted", cm_ind, i, "png"), IOUtility::lab_to_rgb(image));
+			if (image.get_number_of_channels() == 4) {
+				IOUtility::write_mono_image(IOUtility::compose_file_name("dbg_inpainted_depth", cm_ind, i, "png"), IOUtility::get_depth(image));
+			}
+		}
 #endif
 	}
 	printf("\t\tinpainting ended after %d iterations\n", i);

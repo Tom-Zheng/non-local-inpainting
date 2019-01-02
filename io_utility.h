@@ -59,6 +59,7 @@ public:
 
 	// Concatenate RGB and Depth Channel
 	static Image<float> cat(FixedImage<float> image, FixedImage<float> depth);
+	static void cat(FixedImage<float> image, FixedImage<float> depth, Image<float> out);
 	// Separate depth and RGB
 	static void separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth);
 	static Image<float> get_depth(FixedImage<float> input);

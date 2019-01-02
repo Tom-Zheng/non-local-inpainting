@@ -26,12 +26,11 @@
 #include "a_image_updating.h"
 
 /// define DBG_OUTPUT to turn on the output after each iteration and other debug images output
-//#define DBG_OUTPUT
-#include "io_utility.h"
+// #define DBG_OUTPUT
 
-#ifdef DBG_OUTPUT
-#include "io_utility.h"
-#endif
+// #ifdef DBG_OUTPUT
+// #include "io_utility.h"
+// #endif
 
 /**
  * The main class implementing image inpainting method.

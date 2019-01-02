@@ -469,6 +469,24 @@ Image<float> IOUtility::cat(FixedImage<float> image, FixedImage<float> depth)   
 	}
 	return out;
 }
+// Concatenate RGB and Depth Channel
+void IOUtility::cat(FixedImage<float> image, FixedImage<float> depth, Image<float> out)    {
+	if(image.get_number_of_channels() != 3 || depth.get_number_of_channels() != 1|| out.get_number_of_channels() != 4)  {
+		throw std::runtime_error("cat: Channels do not match.");
+	}
+	if(image.get_size() != depth.get_size())    {
+		throw std::runtime_error("cat: Size does not match.");
+	}
+	for (uint row = 0; row < image.get_size_y(); row++)    {
+		for (uint col = 0; col < image.get_size_x(); col++)    {
+			uint ch = 0;
+			for (ch = 0; ch < 3; ch++)    {
+				out.at(col, row, ch) = image.at(col, row, ch);
+			}
+			out.at(col, row, ch) = depth.at(col, row);
+		}
+	}
+}
 // Separate depth and RGB
 void IOUtility::separate(FixedImage<float> input, Image<float> &rgb, Image<float> &depth)    {
 	if (input.get_number_of_channels() != 4)    {

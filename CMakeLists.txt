@@ -92,8 +92,10 @@ add_executable (Inpainting
                 gradient.h
                 mask.h
                 3rdparty/simpois/simpois.c
-		patch_non_local_depth.cpp
-		patch_non_local_depth.h
+		          patch_non_local_depth.cpp
+		          patch_non_local_depth.h
+                l2_rgbd_patch_distance.h
+                l2_rgbd_patch_distance.cpp
                )
 target_link_libraries(Inpainting ${LIBS})
 SET_TARGET_PROPERTIES(Inpainting PROPERTIES

@@ -31,7 +31,8 @@ public:
 
 	PatchNonLocalDepth(Shape patch_size,
 						 float gaussian_sigma,
-						 float lambda,
+						 float lambda_rgb,
+						 float lambda_d,
 						 float conjugate_gradient_tolerance = 1e-10,
 						 int conjugate_gradient_iterations_limit = 1000);
 

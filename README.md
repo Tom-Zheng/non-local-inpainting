@@ -1,16 +1,6 @@
 Variational Framework for Non-Local Inpainting
 ==============================================
 
-Vadim Fedorov, Gabriele Facciolo, and Pablo Arias
-<vadim.fedorov@upf.edu>, DTIC, Universitat Pompeu Fabra, Spain
-<facciolo@ens-cachan.fr>, CMLA, ENS Cachan, France
-<pablo.arias@cmla.ens-cachan.fr>, CMLA, ENS Cachan, France
-
-Complete IPOL article available at: <FILL THIS>
-For future releases of the code visit: <FILL THIS>
-Current Version: <FILL THIS>
-
-
 Build instructions
 ==================
 To compile this code cmake, make and a C99 compiler (ie. gcc) are required.
@@ -34,14 +24,17 @@ Running the program without parameters prints its usage instructions:
       ./build/Inpainting input mask output [OPTIONS]
       
       Available options are:
+       -depth     Specify depth input
        -method    method name (nlmeans)
        -patch     patch side (9)
-       -iters     inpainting iterations (300)
-       -scales    scales amount (7)
-       -coarse    coarsest rate (0.3)
+       -iters     inpainting iterations (200)
+       -scales    scales amount (11)
+       -coarse    coarsest rate (0.1)
        -conft     confidence decay time (5)
        -confa     confidence asymptotic value (0.1)
        -lambda    lambda (0.05)
+       -lambdar   lambda for RGB channel (only for nldeph method)
+       -lambdad   lambda for depth channel (only for nldeph method)
        -init      initialization type [poisson/black/avg/none] (poisson)
        -psigma    Gaussian patch weights (10000)
        -showpyr   PREFIX write intermediate pyramid results
@@ -49,10 +42,10 @@ Running the program without parameters prints its usage instructions:
 
 
 ## Example call:
-
-    $ build/Inpainting data/kom07.png data/kom07_msk.png output.png \
-      -patch 7 -method nlpoisson -lambda 0.05 -scales 11 -coarse 0.1 
-
+    
+    $ build/Inpainting data/img.png data/mask.png output.png -depth data/depth.png -patch 9 -method nldepth -lambdar 1.0 -lambdad 0.0
+    
+    Note: lambda ranges in [0..1], specifying the proportion of intensity information over gradient information.
 
 Files and main functions 
 ========================

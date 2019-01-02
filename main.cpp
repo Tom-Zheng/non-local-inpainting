@@ -23,6 +23,7 @@
 #include "l1_norm_patch_distance.h"
 #include "l2_norm_patch_distance.h"
 #include "l2_combined_patch_distance.h"
+#include "l2_rgbd_patch_distance.h"
 #include "io_utility.h"
 
 #include <stdlib.h>
@@ -64,11 +65,11 @@ static const char *pick_option(int *c, char ***v, const char *name, const char *
 int main(int argc, char *argv[])
 {
 	// get parameters from command line
-	int patch_side						= atoi(pick_option(&argc, &argv, "patch"  , "9"));			// 7
-	int inpainting_iterations			= atoi(pick_option(&argc, &argv, "iters"  , "300"));		// 50 ok too
+	int patch_side						= atoi(pick_option(&argc, &argv, "patch"  , "7"));			// 7
+	int inpainting_iterations			= atoi(pick_option(&argc, &argv, "iters"  , "200"));		// 50 ok too
 	string method_name					=      pick_option(&argc, &argv, "method" , "nlmeans");		// nlpoisson, nlmedians or nlmeans
-	int scales_amount					= atoi(pick_option(&argc, &argv, "scales" , "7"));
-	float coarsest_rate					= atof(pick_option(&argc, &argv, "coarse" , "0"));
+	int scales_amount					= atoi(pick_option(&argc, &argv, "scales" , "11"));
+	float coarsest_rate					= atof(pick_option(&argc, &argv, "coarse" , "0.1"));
 	float confidence_decay_time			= atof(pick_option(&argc, &argv, "conft"  , "5.0"));
 	float confidence_asymptotic_value	= atof(pick_option(&argc, &argv, "confa"  , "0.1"));
 	float lambda						= atof(pick_option(&argc, &argv, "lambda" , "0.05"));
@@ -77,7 +78,9 @@ int main(int argc, char *argv[])
 	string show_nnf_file				=      pick_option(&argc, &argv, "shownnf", "");
 	string show_pyramid_file			=      pick_option(&argc, &argv, "showpyr", "");
 	string depth_name			=      pick_option(&argc, &argv, "depth", "");                  // Depth filename
-
+	float lambda_rgb                    = atof(pick_option(&argc, &argv, "lambdar", "0.05"));
+	float lambda_d                      = atof(pick_option(&argc, &argv, "lambdad", "0.05"));
+	
 	if (argc < 4) {
 		// display usage message and quit
 		fprintf(stderr, "USAGE:\n");
@@ -251,9 +254,10 @@ int main(int argc, char *argv[])
 		image_updating = new PatchNonLocalPoisson(image_update_patch_size, image_update_sigma, lambda, 0.000001, 1000);	// 0.000001, 1000
 		patch_distance = new L2CombinedPatchDistance(lambda, weights_update_patch_size, weights_update_sigma);
 	} else if (method_name.compare("nldepth") == 0) {
-		// TODO: image update method for RGBD
-		image_updating = new PatchNonLocalDepth(image_update_patch_size, image_update_sigma, lambda, 0.000001, 1000);	// 0.000001, 1000
-		patch_distance = new L2CombinedPatchDistance(lambda, weights_update_patch_size, weights_update_sigma);
+		if (!depth_exists)
+			throw std::runtime_error("Specify depth input using -depth [filename]");
+		image_updating = new PatchNonLocalDepth(image_update_patch_size, image_update_sigma, lambda_rgb, lambda_d, 0.000001, 1000);	// 0.000001, 1000
+		patch_distance = new L2RGBDPatchDistance(lambda_rgb, lambda_d, weights_update_patch_size, weights_update_sigma);
 	} else {
 		throw std::runtime_error("ERROR: Unknown method name");
 	}

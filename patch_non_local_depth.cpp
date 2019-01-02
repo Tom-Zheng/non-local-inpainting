@@ -22,14 +22,15 @@ PatchNonLocalDepth::PatchNonLocalDepth()
 
 PatchNonLocalDepth::PatchNonLocalDepth(Shape patch_size,
 										   float gaussian_sigma,
-										   float lambda,
+										   float lambda_rgb,
+										   float lambda_d,
 										   float conjugate_gradient_tolerance,
 										   int conjugate_gradient_iterations_limit)
 	: AImageUpdating(patch_size, gaussian_sigma)
 {
-	// rgb_updating = new PatchNonLocalPoisson(patch_size, gaussian_sigma, lambda, 0.000001, 1000);
-	rgb_updating = new PatchNonLocalMeans(patch_size, gaussian_sigma);
-	depth_updating = new PatchNonLocalPoisson(patch_size, gaussian_sigma, lambda, 0.000001, 1000);
+	rgb_updating = new PatchNonLocalPoisson(patch_size, gaussian_sigma, lambda_rgb, 0.000001, 1000);
+	// rgb_updating = new PatchNonLocalMeans(patch_size, gaussian_sigma);
+	depth_updating = new PatchNonLocalPoisson(patch_size, gaussian_sigma, lambda_d, 0.000001, 1000);
 }
 
 double PatchNonLocalDepth::update(Image<float> image,
@@ -47,9 +48,9 @@ double PatchNonLocalDepth::update(Image<float> image,
 	IOUtility::separate(image, rgb, depth);
 	IOUtility::separate(image, rgb_orig, depth_orig);
 	// Do updating accordingly
-    total_difference += rgb_updating->update(image, original_image, inpainting_domain, extended_inpainting_domain, nnf, confidence_mask);
+    total_difference += rgb_updating->update(rgb, rgb_orig, inpainting_domain, extended_inpainting_domain, nnf, confidence_mask);
     total_difference += depth_updating->update(depth, depth_orig, inpainting_domain, extended_inpainting_domain, nnf, confidence_mask);
     // Merge channels
-    image = IOUtility::cat(rgb, depth);
+    IOUtility::cat(rgb, depth, image);
 	return total_difference;
 }
